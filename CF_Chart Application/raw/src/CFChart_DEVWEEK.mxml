@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:cf="coldfusion.service.mxml.*"
+					   width="700" height="500" title="ColdFusion as a Service - CF:Chart Example">
+	
+	<fx:Declarations>
+		<cf:Config id="config"
+				   cfServer="127.0.0.1"
+				   cfPort="8500"
+				   servicePassword="cfaas"
+				   serviceUserName="cfaas" />
+		
+		<cf:Chart id="chart"
+				  action="generate"
+				  format="{strFormat}"
+				  chartSeries="{charSeries}"
+				  result="onResult(event)"
+				  fault="onFault(event)"
+				  title="{strTitle}"
+				  showBorder="yes"
+				  showLegend="yes"
+				  showMarkers="yes"
+				  fontSize="14"
+				  font="arial"
+				  chartWidth="650"
+				  chartHeight="400"
+				  labelFormat="number"
+				  show3d="{strShow3D}" />
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+		
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		import mx.collections.ArrayCollection;
+		
+		[Bindable] public var charSeries	:	Array;
+		[Bindable] public var charData		:	Array;
+		[Bindable] public var strFormat		:	String;
+		[Bindable] public var strType		: 	String;
+		[Bindable] public var strShow3D		: 	String = 'no';
+		[Bindable] public var strTitle		:   String;
+		
+		public var intGuns		: 	Number = 10;
+		public var intBlues		: 	Number = 23;
+		public var intVideo		: 	Number = 98;
+		public var intDrugs		: 	Number = 30;
+		
+		public var intTouch		: 	Number = 0;
+		public var intNoTouch	:   Number = 100;
+		
+		public static const arrFormat	:	ArrayCollection = new ArrayCollection(
+		[	{label:"jpg", data:'jpg'},
+		{label:"flash", data:"flash"},
+		{label:"png", data:"png"}
+		]);
+		
+		public static const arrType		:	ArrayCollection = new ArrayCollection(
+		[	{label:"pie", data:"pie"},
+		{label:"bar", data:"bar"}
+		]);
+		
+		private function onResult(event:ResultEvent):void {
+		trace(event);
+		htmlLoader.location = event.result.toString();
+		remoteFile.text		= event.result.toString();
+		}
+		
+		private function onFault(event:FaultEvent):void {
+		trace('something went wrong. you muppet',event.message);
+		}
+		
+		private function select3D(event:Event):void {
+		if(show3D_check.selected) {
+		strShow3D = 'yes';
+		} else {
+		strShow3D = 'no';
+		}
+		}
+		
+		private function generateChart(intChart:Number):void {
+		strFormat 	= ComboBox(chartFormat).selectedItem.data;
+		strType 	= ComboBox(chartType).selectedItem.data;
+		
+		switch (intChart) {
+		case 1:
+		
+		strTitle = 'Mortality rates and causes in the radio broadcast sector';
+		
+		charData 	= [
+		{item:"Guns",value:intGuns},
+		{item:"Blues",value:intBlues},
+		{item:"Video",value:intVideo},
+		{item:"Drugs",value:intDrugs}];
+		
+		break;
+		
+		case 2:
+		
+		strTitle = 'M.C. Hammer contact allowance';
+		
+		charData 	= [
+		{item:"Touch freely",value:intTouch},
+		{item:"Don't touch this",value:intNoTouch}];
+		
+		break;
+		}
+		
+		
+		
+		charSeries 	= [{type:strType, chartdata:charData}];
+		
+		chart.execute();		
+		}
+		
+		]]>
+	</fx:Script>
+	
+	
+	
+	<mx:ComboBox 	id="chartFormat" 	x="24" 	y="19" dataProvider="{arrFormat}" width="75" />
+	<mx:ComboBox 	id="chartType" 		x="107" y="19" dataProvider="{arrType}" width="75" />
+	
+	<mx:CheckBox 	id="show3D_check" 	x="190" y="19" label="Show 3D" 			change="select3D(event);" />
+	<mx:Button 		id="getchart1_btn"   x="278" y="19" label="fetch chart 1" 	click="generateChart(1);" />
+	<mx:Button 		id="getchart2_btn"   x="385" y="19" label="fetch chart 2" 	click="generateChart(2);" />
+	
+	
+	<mx:HTML 	x="24" 	y="75" 	id="htmlLoader" width="650" height="400"/>
+	
+	<mx:Label 	x="24" 	y="49" id="remoteFile"/>
+	
+</s:WindowedApplication>

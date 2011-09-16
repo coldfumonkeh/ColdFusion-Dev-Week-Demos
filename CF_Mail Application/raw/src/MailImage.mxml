@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:cf="coldfusion.service.mxml.*" width="800" height="600" creationComplete="init()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<cf:Config id="conf" cfPort="8500" cfServer="127.0.0.1" servicePassword="cfaas" serviceUserName="cfaas" />
+		
+		<cf:Image id="getImageInfo" 
+				  action="info" 
+				  source="{uploadedFileUrl}" 
+				  result="imageInfoResult(event)" 
+				  fault="onFault(event)" />
+		
+		<cf:Image id="rotateImage" 
+				  action="rotate" 
+				  source="{uploadedFileUrl}" 
+				  angle="{imgAngle}" 
+				  result="imageResult(event)" 
+				  fault="onFault(event)" />
+		
+		<cf:Image id="createThumb" 
+				  action="resize" 
+				  source="{uploadedFileUrl}"
+				  height="{originalThumb.height}" 
+				  width="{originalThumb.width}" 
+				  result="generateThumb(event)" 
+				  fault="onFault(event)" />
+		
+		<cf:Image id="resizeImage" 
+				  action="resize" 
+				  source="{uploadedFileUrl}" 
+				  height="{imgHeight}" 
+				  width="{imgWidth}" 
+				  result="imageResult(event)" 
+				  fault="onFault(event)" />
+		
+		<cf:Mail id="sendMail" 
+				 server="{mailServer}" 
+				 userName="{mailUserName}" 
+				 password="{mailPassword}" 
+				 to="{mailTo.text}" 
+				 from="{mailFrom.text}" 
+				 subject="Test message" 
+				 result="mailSuccess(event)" 
+				 fault="mailFailure(event)" />
+		
+	</fx:Declarations>
+	
+	<fx:Script source="script.as" />
+	
+	<mx:VBox width="100%" height="100%">
+		
+		<!-- top panel for the image drop and viewing -->
+		<mx:Panel id="imagePanel" width="100%" height="100%" layout="absolute">
+			
+			<mx:Canvas id="drawCanvas">
+				<mx:Image width="{imgWidth}" height="{imgHeight}" id="dragImage" left="{imgMargin}" />		
+			</mx:Canvas>
+			
+		</mx:Panel>
+		<mx:Label id="filelabel" />
+		
+		<!-- bottom box for control and mail panels -->
+		<mx:HBox>
+			
+			<mx:Panel id="controlPanel" width="400" height="200" layout="absolute" title="Image Controls">
+				<mx:HSlider x="10" y="27" 
+							id="rotSlider" 
+							minimum="0" 
+							maximum="360" 
+							snapInterval="0.01" 
+							showDataTip="true"
+							showTrackHighlight="true"
+							dataTipPlacement="top"
+							dataTipStyleName="dataTipStyle"
+							change="onRotationChange(event)" width="160" value="{imgAngle}" />
+				<mx:Label x="10" y="10" text="Rotation ({imgAngle}&#186;)" width="160"/>
+				<mx:HSlider x="10" y="76" id="imagePercSlider" 
+							minimum="10" maximum="100"
+							snapInterval="0.01"
+							showDataTip="true"
+							showTrackHighlight="true"
+							dataTipPlacement="top"
+							dataTipStyleName="dataTipStyle"
+							change="onPercChange(event)" value="{imgPercent}" />
+				<mx:Image id="originalThumb" alpha="1.0" 
+						  y="10" 
+						  buttonMode="true" 
+						  toolTip="Reset the original image"
+						  mouseDown="resetImage(event)"  x="205"/>
+				<mx:Label x="10" y="58" text="Image Size ({imgPercent}%)"/>
+			</mx:Panel>
+			
+			<!-- mail panel goes here -->
+			<mx:Panel id="mailPanel" width="389" height="200" layout="absolute" title="ColdFusion Mail Services">
+				<mx:Button label="Send Email" click="sendEmail()"  x="54" y="94"/>
+				<mx:Label x="10" y="40" text="To:"/>
+				<mx:Label x="10" y="66" text="From:"/>
+				<mx:TextInput x="54" y="38" width="240" id="mailTo"/>
+				<mx:TextInput x="54" y="64" width="240" id="mailFrom"/>
+				<mx:Label x="10" y="10" text="Send the image as an attachment." width="284"/>
+			</mx:Panel>
+			<!-- mail panel end -->
+			
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+</s:WindowedApplication>

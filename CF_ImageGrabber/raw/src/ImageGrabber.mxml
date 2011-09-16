@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:cf="coldfusion.service.mxml.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<cf:Config id="conf" cfPort="8500" cfServer="127.0.0.1" servicePassword="cfaas" serviceUserName="cfaas" />
+		<cf:Image id="imgService" action="GrayScale" source="{sourceURL.text}" result="resultHandler(event)" fault="faultHandler(event)" />
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+			
+			private function resultHandler(event:ResultEvent):void {
+				image.source = event.result.toString();
+			}
+			
+			private function faultHandler(event:Event):void {
+				Alert.show('Ooops.. something went wrong.');
+			}
+			
+			private function grayScale():void {
+				imgService.execute();
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Panel x="0" y="0" width="100%" height="100%">
+		
+		<s:VGroup width="100%" height="100%">
+			
+			
+			<s:HGroup width="100%" top="20">
+				
+				<s:Label text="Source:" />
+				<s:TextInput id="sourceURL" width="100%" />
+				<s:Button id="renderImage" label="Grab image" click="grayScale()" />
+				
+			</s:HGroup>
+			
+			<s:Image id="image" width="100%" height="100%" />
+			
+			
+		</s:VGroup>
+		
+	</s:Panel>
+	
+</s:WindowedApplication>

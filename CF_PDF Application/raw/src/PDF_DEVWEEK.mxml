@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:cf="coldfusion.service.mxml.*" width="700" height="516" creationComplete="init()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<cf:Config id="config"
+				   cfServer="{cfServer}"
+				   cfPort="{cfPort}"
+				   servicePassword="{cfPassword}"
+				   serviceUserName="{cfUser}" />
+		
+		<cf:Pdf id="pdf" 
+				action="{strPdfAction}" 
+				source="{strPdfURL}" 
+				result="onResult(event)" 
+				fault="onFault(event)" />
+	</fx:Declarations>
+	
+	<fx:Script source="as/script.as" />
+	
+	<s:Panel x="10" y="10" width="678" height="325" id="dropPanel" title="CFPDF {strPDFTitle} {strPdfURL}">
+		
+		<s:Scroller width="100%" height="100%" verticalScrollPolicy="auto">
+				
+				<s:DataGroup dataProvider="{arrThumb}" itemRenderer="PDFThumbnail" width="640" height="266">
+					<s:layout>
+						<s:TileLayout />
+					</s:layout>
+				</s:DataGroup>
+
+		</s:Scroller>
+		
+	</s:Panel>
+		
+	<s:Panel x="10" y="343" width="250" height="145" id="pdfInfo" title="PDF Information">
+		<s:Label x="10" y="10" text="Author: {strAuthor}"/>
+		<s:Label x="10" y="36" text="Page Layout: {strPageLayout}"/>
+		<s:Label x="10" y="62" text="Total Pages: {strTotalPages}"/>
+	</s:Panel>
+	
+	<s:Button id="genThumbs_btn" enabled="false" x="585" y="343" label="Get Thumbnails" click="getThumbs()"/>
+
+</s:WindowedApplication>
